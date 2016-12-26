@@ -1,11 +1,8 @@
 package ru.mail.polis;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class ChainHashTable<E extends Comparable<E>> implements ISet<E> {
-
     class Node {
         E value;
         Node next;
@@ -28,7 +25,6 @@ public class ChainHashTable<E extends Comparable<E>> implements ISet<E> {
 
     private final int INITIAL_CAPACITY = 8;
 //    private final float LOAD_FACTOR = 0.5f;
-
     private Comparator<E> comparator;
     private Object[] table;
     private int size;
@@ -85,15 +81,15 @@ public class ChainHashTable<E extends Comparable<E>> implements ISet<E> {
     @Override
     public boolean remove(E value) {
         Node prev = null;
-        int idx = hash(value);
-        Node curr = getNode(idx);
+        int index = hash(value);
+        Node curr = getNode(index);
         while (curr != null && compare(value, curr.value) != 0) {
             prev = curr;
             curr = curr.next;
         }
         if (curr != null) {
             if (prev == null) { //head
-                table[idx] = getNode(idx).next;
+                table[index] = getNode(index).next;
             } else {
                 prev.next = curr.next;
             }
@@ -110,8 +106,8 @@ public class ChainHashTable<E extends Comparable<E>> implements ISet<E> {
     }
 
     @SuppressWarnings("unchecked")
-    private Node getNode(int idx) {
-        return (Node) table[idx];
+    private Node getNode(int index) {
+        return (Node) (table[index]);
     }
 
     private int compare(E v1, E v2) {

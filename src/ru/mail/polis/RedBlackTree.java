@@ -1,18 +1,15 @@
 package ru.mail.polis;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 public class RedBlackTree<E extends Comparable<E>> implements ISortedSet<E> {
     private int size;
     private final Comparator<E> comparator;
-    private Node root;
     private Node nil = new Node(false, null, null, null, null);
+    private Node root = nil;
 
     public RedBlackTree() {
-        this.comparator = null;
+        this(null);
     }
     public RedBlackTree(Comparator<E> comparator) {
         this.comparator = comparator;
@@ -50,8 +47,21 @@ public class RedBlackTree<E extends Comparable<E>> implements ISortedSet<E> {
 
     @Override
     public List<E> inorderTraverse() {
-        return null;
+        if (isEmpty()) {
+            throw new NoSuchElementException("Tree is empty");
+        }
+        List<E> res = new LinkedList<>();
+        inorderTraverse(root, res);
+        return res;
     }
+    private void inorderTraverse(Node elem, List<E> lst) {
+        if (elem != nil) {
+            inorderTraverse(elem.left, lst);
+            lst.add(elem.data);
+            inorderTraverse(elem.right, lst);
+        }
+    }
+
 
     @Override
     public int size() {
@@ -59,14 +69,14 @@ public class RedBlackTree<E extends Comparable<E>> implements ISortedSet<E> {
     }
     @Override
     public boolean isEmpty() {
-        return root == null;
+        return root == nil;
     }
     @Override
     public boolean contains(E value) {
         if (value == null) {
             throw new NullPointerException("Value is null");
         }
-        if (root != null) {
+        if (!isEmpty()) {
             Node curr = root;
             while (curr != nil) {
                 int cmp = compare(curr.data, value);
@@ -84,11 +94,14 @@ public class RedBlackTree<E extends Comparable<E>> implements ISortedSet<E> {
 
     @Override
     public boolean add(E value) {
+        if (value == null) {
+            throw new NullPointerException("Value is null");
+        }
         Node z;
         Node y = nil;
         Node x = root;
 
-        while (!isEmpty() && x != nil) {
+        while (x != nil) {
             y = x;
             if (compare(value, x.data) < 0) {
                 x = x.left;
@@ -188,6 +201,9 @@ public class RedBlackTree<E extends Comparable<E>> implements ISortedSet<E> {
 
     @Override
     public boolean remove(E value) {
+        if (value == null) {
+            throw new NullPointerException("Value is null");
+        }
         Node z = search(value);
         if (z == null) {
             return false;
@@ -225,20 +241,17 @@ public class RedBlackTree<E extends Comparable<E>> implements ISortedSet<E> {
         return true;
     }
     private Node search(E value) {
-        if (!isEmpty()) {
-            Node x = root;
-            while (x != nil) {
-                if (compare(value, x.data) == 0) {
-                    return x;
-                } else if (compare(value, x.data) < 0) {
-                    x = x.left;
-                } else {
-                    x = x.right;
-                }
+        Node x = root;
+        while (x != nil) {
+            if (compare(value, x.data) == 0) {
+                return x;
+            } else if (compare(value, x.data) < 0) {
+                x = x.left;
+            } else {
+                x = x.right;
             }
-            return null;
         }
-        throw new NoSuchElementException("Tree is empty, no elements");
+        return null;
     }
     private void transplant(Node u, Node v) {
         if (u.parent == nil) {
